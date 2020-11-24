@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Sonat Movies App</string>
+
+    <!-- Main activity -->
+    <string name="main_tv_hello_world">Click</string>
+
+</resources>
