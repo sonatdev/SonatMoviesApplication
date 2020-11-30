@@ -1,19 +1,26 @@
 <resources>
-    <string name="app_name">Sonat Movies App</string>
+    <string name="app_name">Sonat Movies</string>
 
     <!-- Common -->
     <string name="common_label_back">Back</string>
 
-    <!-- Main activity -->
-    <string name="main_tv_hello_world">Click</string>
+    <!-- Movies (content) -->
+    <string name="movies_location">Warszawa, Poland</string>
 
-    <!-- Movie Details activity -->
+    <!-- Movie Item -->
+    <string name="movies_label_movie_duration">137 min</string>
+    <string name="movies_label_movie_reviews">125 Reviews</string>
+    <!-- Movie Item (content) -->
+    <string name="movies_movie_name">Avengers: End Game</string>
+    <string name="movies_movie_pg_rating">13+</string>
+    <string name="movies_movie_tags">Action, Adventure, Fantasy</string>
+
+    <!-- Movie Details -->
     <string name="movie_details_label_cast">Cast</string>
     <string name="movie_details_label_storyline">Storyline</string>
     <string name="movie_details_label_reviews">125 Reviews</string>
     <string name="movie_details_movie_poster_image_descr">Movie\'s poster</string>
-
-    <!-- Movie Details activity (content) -->
+    <!-- Movie Details (content) -->
     <string name="movie_details_movie_name">Avengers: End Game</string>
     <string name="movie_details_movie_pg_rating">13+</string>
     <string name="movie_details_movie_tags">Action, Adventure, Fantasy</string>
