@@ -1,21 +1,27 @@
 package com.sonat.movies
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.sonat.movies.view.MovieDetailsFragment
+import com.sonat.movies.view.MoviesFragment
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MoviesFragment.MovieSelectionListener {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<TextView>(R.id.main_activity_text_view).apply {
-            setOnClickListener { openMovieDetails() }
+        if (savedInstanceState == null) {
+            supportFragmentManager.beginTransaction()
+                .add(R.id.main_container, MoviesFragment())
+                .commit()
         }
     }
 
-    private fun openMovieDetails() {
-        startActivity(Intent(this, MovieDetailsActivity::class.java))
+    override fun onMovieSelected(movieId: String) {
+        supportFragmentManager.beginTransaction()
+            .addToBackStack(null)
+            .replace(R.id.main_container, MovieDetailsFragment.newInstance(movieId))
+            .commit()
     }
 }

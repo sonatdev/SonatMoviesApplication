@@ -15,4 +15,6 @@
     <color name="storm_gray">#6D6D80</color>
     <color name="alto">#D8D8D8</color>
     <color name="gallery">#ECECEC</color>
+    <color name="black_half_transparent">#50222232</color>
+    <color name="dark_grey_half_transparent2">#503B3B4D</color>
 </resources>
