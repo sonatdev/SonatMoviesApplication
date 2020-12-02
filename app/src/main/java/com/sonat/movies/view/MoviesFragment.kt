@@ -14,7 +14,7 @@ import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
 class MoviesFragment : Fragment() {
 
     private val moviesDataSource = MoviesDataSource()
-    private var moviesRecycler: RecyclerView? = null
+    private lateinit var moviesRecycler: RecyclerView
     private var movieSelectionListener: MovieSelectionListener? = null
 
     override fun onAttach(context: Context) {
@@ -37,19 +37,16 @@ class MoviesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         moviesRecycler = view.findViewById(R.id.recycler_movies)
-        moviesRecycler?.adapter = MoviesRecyclerAdapter {
+        moviesRecycler.adapter = MoviesRecyclerAdapter {
             movieSelectionListener?.onMovieSelected(it.title)
         }
-    }
 
-    override fun onStart() {
-        super.onStart()
         updateDate()
     }
 
     private fun updateDate() {
-        (moviesRecycler?.adapter as? MoviesRecyclerAdapter)
-            ?.bindMovies(moviesDataSource.getMovies())
+        (moviesRecycler.adapter as MoviesRecyclerAdapter)
+            .bindMovies(moviesDataSource.getMovies())
     }
 
     override fun onDetach() {
