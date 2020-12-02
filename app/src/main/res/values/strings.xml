@@ -8,12 +8,9 @@
     <string name="movies_location">Warszawa, Poland</string>
 
     <!-- Movie Item -->
-    <string name="movies_label_movie_duration">137 min</string>
-    <string name="movies_label_movie_reviews">125 Reviews</string>
-    <!-- Movie Item (content) -->
-    <string name="movies_movie_name">Avengers: End Game</string>
-    <string name="movies_movie_pg_rating">13+</string>
-    <string name="movies_movie_tags">Action, Adventure, Fantasy</string>
+    <string name="movies_label_movie_duration">%d min</string>
+    <string name="movies_label_movie_reviews">%d Reviews</string>
+    <string name="movies_label_movie_pg_rating">%d+</string>
 
     <!-- Movie Details -->
     <string name="movie_details_label_cast">Cast</string>
