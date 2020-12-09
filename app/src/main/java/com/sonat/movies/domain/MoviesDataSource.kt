@@ -1,10 +1,11 @@
 package com.sonat.movies.domain
 
-import com.sonat.movies.data.models.Movie
+import android.content.Context
+import com.sonat.movies.data.loadMovies
 
-class MoviesDataSource() {
+class MoviesDataSource(private val context: Context) {
 
-    fun getMovies() = listOf<Movie>() //ToDo
+    suspend fun getMovies() = loadMovies(context)
 
-    fun getMovieByTitle(title: String) = getMovies().first { it.title == title }
+    suspend fun getMovieById(movieId: Int) = getMovies().first { it.id == movieId }
 }

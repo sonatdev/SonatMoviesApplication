@@ -15,14 +15,12 @@ class MoviesRecyclerAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         MoviesViewHolder(
-            LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false)
+            LayoutInflater.from(parent.context).inflate(R.layout.item_movie, parent, false),
+            movieClickListener
         )
 
     override fun onBindViewHolder(holder: MoviesViewHolder, position: Int) {
         holder.onBind(movies[position])
-        holder.itemView.setOnClickListener {
-            movieClickListener.onItemClick(movies[position])
-        }
     }
 
     override fun getItemCount() = movies.size
