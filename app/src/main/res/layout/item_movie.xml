@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
     android:background="@drawable/rectangle_bordered_8dp"
     android:backgroundTint="@color/black_half_transparent">
 
@@ -11,10 +13,10 @@
         android:layout_width="wrap_content"
         android:layout_height="250dp"
         android:adjustViewBounds="true"
-        android:background="@drawable/avengers_poster"
         android:src="@drawable/gradient_mask_bw"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/text_movie_pg_rating"
@@ -25,14 +27,14 @@
         android:background="@drawable/rectangle_rounded_5dp"
         android:backgroundTint="@color/background"
         android:gravity="center"
-        android:text="@string/movies_movie_pg_rating"
         android:textColor="@color/white"
         android:textSize="12sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/image_movie_like"
         app:layout_constraintHorizontal_chainStyle="spread_inside"
         app:layout_constraintStart_toStartOf="@+id/image_movie_poster"
-        app:layout_constraintTop_toTopOf="@+id/image_movie_poster" />
+        app:layout_constraintTop_toTopOf="@+id/image_movie_poster"
+        tools:text="13+" />
 
     <ImageView
         android:id="@+id/image_movie_like"
@@ -53,12 +55,12 @@
         android:layout_marginStart="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="5dp"
-        android:text="@string/movies_movie_tags"
         android:textColor="@color/radical_red"
         android:textSize="10sp"
         app:layout_constraintBottom_toTopOf="@+id/image_movie_rating_star1"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/image_movie_poster" />
+        app:layout_constraintStart_toStartOf="@+id/image_movie_poster"
+        tools:text="Action, Adventure, Fantasy" />
 
     <ImageView
         android:id="@+id/image_movie_rating_star1"
@@ -117,14 +119,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="@string/movie_details_label_reviews"
         android:textAllCaps="true"
         android:textColor="@color/storm_gray"
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@+id/image_movie_rating_star1"
         app:layout_constraintStart_toEndOf="@+id/image_movie_rating_star5"
-        app:layout_constraintTop_toTopOf="@+id/image_movie_rating_star1" />
+        app:layout_constraintTop_toTopOf="@+id/image_movie_rating_star1"
+        tools:text="125 Reviews" />
 
     <TextView
         android:id="@+id/text_movie_name"
@@ -132,23 +134,24 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/movies_movie_name"
         android:textColor="@color/white"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="@id/text_movie_tags"
-        app:layout_constraintTop_toBottomOf="@+id/image_movie_poster" />
+        app:layout_constraintTop_toBottomOf="@+id/image_movie_poster"
+        tools:text="@tools:sample/full_names" />
 
     <TextView
         android:id="@+id/text_movie_duration"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
-        android:text="@string/movies_label_movie_duration"
         android:textColor="@color/storm_gray"
         android:textSize="10sp"
         android:textStyle="bold"
+        android:textAllCaps="true"
         app:layout_constraintStart_toStartOf="@id/text_movie_name"
-        app:layout_constraintTop_toBottomOf="@id/text_movie_name" />
+        app:layout_constraintTop_toBottomOf="@id/text_movie_name"
+        tools:text="100 min" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

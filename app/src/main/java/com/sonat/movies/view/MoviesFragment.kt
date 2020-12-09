@@ -1,20 +1,20 @@
 package com.sonat.movies.view
 
 import android.content.Context
-import android.content.res.ColorStateList
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.RecyclerView
 import com.sonat.movies.R
+import com.sonat.movies.domain.MoviesDataSource
+import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
 
 class MoviesFragment : Fragment() {
 
-    private var isMovieLiked: Boolean = false //ToDo: temporal solution
+    private val moviesDataSource = MoviesDataSource()
+    private lateinit var moviesRecycler: RecyclerView
     private var movieSelectionListener: MovieSelectionListener? = null
 
     override fun onAttach(context: Context) {
@@ -36,27 +36,22 @@ class MoviesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<View>(R.id.card_movie)
-            .setOnClickListener { movieSelectionListener?.onMovieSelected(MOVIE_ID_PARAM) }
+        moviesRecycler = view.findViewById(R.id.recycler_movies)
+        moviesRecycler.adapter = MoviesRecyclerAdapter {
+            movieSelectionListener?.onMovieSelected(it.title)
+        }
 
-        view.findViewById<ImageView>(R.id.image_movie_like)
-            .setOnClickListener { changeLikeIconColor(it as ImageView) }
+        updateDate()
+    }
+
+    private fun updateDate() {
+        (moviesRecycler.adapter as MoviesRecyclerAdapter)
+            .bindMovies(moviesDataSource.getMovies())
     }
 
     override fun onDetach() {
         super.onDetach()
         movieSelectionListener = null
-    }
-
-    private fun changeLikeIconColor(likeIcon: ImageView) {
-        val newColorId = if (isMovieLiked) R.color.white else R.color.radical_red
-        val color = ContextCompat.getColor(context!!, newColorId)
-        ImageViewCompat.setImageTintList(likeIcon, ColorStateList.valueOf(color))
-        isMovieLiked = !isMovieLiked
-    }
-
-    companion object {
-        const val MOVIE_ID_PARAM = "movie_id"
     }
 
     interface MovieSelectionListener {
