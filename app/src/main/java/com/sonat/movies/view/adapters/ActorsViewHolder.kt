@@ -25,6 +25,6 @@ class ActorsViewHolder(
     fun onBind(actor: Actor) {
         this.actor = actor
         nameText.text = actor.name
-        photoImage.setImageResource(actor.photoResId)
+//        photoImage.setImageResource(actor.photoUrl) //ToDo
     }
 }

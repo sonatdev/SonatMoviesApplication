@@ -21,12 +21,13 @@ class MoviesViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun onBind (movie: Movie) {
         nameText.text = movie.title
-        tagsText.text = movie.tags.joinToString()
-        pgRatingText.text = itemView.context.getString(R.string.movies_label_movie_pg_rating, movie.pgRating)
+        tagsText.text = movie.genres.joinToString { it.name }
+        pgRatingText.text =
+            itemView.context.getString(R.string.movies_label_movie_pg_rating, movie.pgRating)
         reviewsCountText.text = itemView.context.getString(R.string.movies_label_movie_reviews, movie.reviewsCount)
         durationInMinText.text =
             itemView.context.getString(R.string.movies_label_movie_duration, movie.durationInMin)
-        posterImage.background = ContextCompat.getDrawable(itemView.context, movie.posterResId)
+//        posterImage.background = ContextCompat.getDrawable(itemView.context, movie.posterUrl)//ToDo
 
         setLikeIconColor(isFavoriteImage, movie)
         isFavoriteImage.setOnClickListener { makeMovieFavorite(it as ImageView, movie) }

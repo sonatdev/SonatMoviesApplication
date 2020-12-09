@@ -73,7 +73,7 @@ class MovieDetailsFragment : Fragment() {
         val context = requireContext()
         with(movie) {
             titleTextView.text = title
-            tagsTextView.text = tags.joinToString()
+            tagsTextView.text = genres.joinToString { it.name }
             pgRatingTextView.text =
                 context.getString(R.string.movie_details_label_pg_rating, pgRating)
             reviewsTextView.text =
