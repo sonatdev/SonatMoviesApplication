@@ -5,6 +5,7 @@ import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.core.widget.ImageViewCompat
@@ -28,6 +29,7 @@ class MoviesViewHolder(
     private val reviewsCountText = itemView.findViewById<TextView>(R.id.text_movie_reviews)
     private val durationInMinText = itemView.findViewById<TextView>(R.id.text_movie_duration)
     private val posterImage = itemView.findViewById<ImageView>(R.id.image_movie_poster)
+    private val ratingBar = itemView.findViewById<RatingBar>(R.id.rating_bar_movie)
     private val isFavoriteImage = itemView.findViewById<ImageView>(R.id.image_movie_like)
 
     init {
@@ -45,6 +47,7 @@ class MoviesViewHolder(
             itemView.context.getString(R.string.movies_label_movie_reviews, movie.reviewsCount)
         durationInMinText.text =
             itemView.context.getString(R.string.movies_label_movie_duration, movie.durationInMin)
+        ratingBar.rating = movie.reviewsRating / 2
 
         Glide.with(itemView.context)
             .load(movie.posterUrl)

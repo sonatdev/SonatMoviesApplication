@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -34,6 +35,7 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var pgRatingTextView: TextView
     private lateinit var reviewsTextView: TextView
     private lateinit var storylineTextView: TextView
+    private lateinit var ratingBar: RatingBar
     private lateinit var actorsRecyclerView: RecyclerView
 
     private val retrieveMovieCoroutineScope = CoroutineScope(Dispatchers.IO)
@@ -69,6 +71,7 @@ class MovieDetailsFragment : Fragment() {
             pgRatingTextView = findViewById(R.id.text_movie_pg_rating)
             reviewsTextView = findViewById(R.id.text_movie_reviews)
             storylineTextView = findViewById(R.id.text_movie_storyline_content)
+            ratingBar = findViewById(R.id.rating_bar_movie)
             actorsRecyclerView = findViewById(R.id.recycler_actors)
         }
     }
@@ -101,6 +104,7 @@ class MovieDetailsFragment : Fragment() {
             reviewsTextView.text =
                 context.getString(R.string.movie_details_label_reviews, reviewsCount)
             storylineTextView.text = storyline
+            ratingBar.rating = reviewsRating / 2
 
             Glide.with(context)
                 .load(backdropUrl)
