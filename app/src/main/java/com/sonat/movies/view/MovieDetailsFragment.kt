@@ -18,6 +18,7 @@ import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
 import com.sonat.movies.view.glide.CustomBackgroundTarget
+import com.sonat.movies.view.util.setLikeIconColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -25,9 +26,9 @@ import kotlinx.coroutines.withContext
 
 class MovieDetailsFragment : Fragment() {
 
-    private lateinit var moviesDataSource: MoviesDataSource
-
     private var movieId: Int = 0
+    private lateinit var movie: Movie
+
     private lateinit var backTextView: TextView
     private lateinit var posterImageView: ImageView
     private lateinit var titleTextView: TextView
@@ -36,13 +37,13 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var reviewsTextView: TextView
     private lateinit var storylineTextView: TextView
     private lateinit var ratingBar: RatingBar
+    private lateinit var isFavoriteImage: ImageView
     private lateinit var actorsRecyclerView: RecyclerView
 
     private val retrieveMovieCoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        moviesDataSource = MoviesDataSource(requireContext())
 
         arguments?.let {
             movieId = it.getInt(MOVIE_ID_PARAM)
@@ -72,12 +73,18 @@ class MovieDetailsFragment : Fragment() {
             reviewsTextView = findViewById(R.id.text_movie_reviews)
             storylineTextView = findViewById(R.id.text_movie_storyline_content)
             ratingBar = findViewById(R.id.rating_bar_movie)
+            isFavoriteImage = findViewById(R.id.image_movie_like)
             actorsRecyclerView = findViewById(R.id.recycler_actors)
         }
     }
 
     private fun setOnClickListeners() {
         backTextView.setOnClickListener { activity?.onBackPressed() }
+        isFavoriteImage.setOnClickListener {
+            MoviesDataSource.addMovieToFavorites(movie)
+            setLikeIconColor(it as ImageView, movie)
+        }
+
         actorsRecyclerView.adapter = ActorsRecyclerAdapter {
             Toast.makeText(
                 context,
@@ -89,7 +96,7 @@ class MovieDetailsFragment : Fragment() {
 
     private fun getMovieAndUpdateViewState() {
         retrieveMovieCoroutineScope.launch {
-            val movie = moviesDataSource.getMovieById(movieId)
+            movie = MoviesDataSource.getMovieById(movieId, requireContext())
             withContext(Dispatchers.Main) { bindMovieData(movie) }
         }
     }
@@ -111,6 +118,8 @@ class MovieDetailsFragment : Fragment() {
                 .fitCenter()
                 .placeholder(ColorDrawable(Color.BLACK))
                 .into(CustomBackgroundTarget(posterImageView))
+
+            setLikeIconColor(isFavoriteImage, movie)
 
             with(actorsRecyclerView.adapter as ActorsRecyclerAdapter) {
                 bindActors(actors)

@@ -1,24 +1,22 @@
 package com.sonat.movies.view.adapters
 
-import android.content.res.ColorStateList
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.view.glide.CustomBackgroundTarget
-import com.sonat.movies.view.listeners.RecyclerItemClickListener
+import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
+import com.sonat.movies.view.util.setLikeIconColor
 
 class MoviesViewHolder(
     itemView: View,
-    private val movieClickListener: RecyclerItemClickListener<Movie>,
+    private val movieClickListener: RecyclerItemWithLikeIconClickListener<Movie>,
 ) : RecyclerView.ViewHolder(itemView) {
 
     private lateinit var movie: Movie
@@ -34,6 +32,10 @@ class MoviesViewHolder(
 
     init {
         itemView.setOnClickListener { movieClickListener.onItemClick(movie) }
+        isFavoriteImage.setOnClickListener {
+            movieClickListener.onLikeIconClick(movie)
+            setLikeIconColor(it as ImageView, movie)
+        }
     }
 
     fun onBind(movie: Movie) {
@@ -56,18 +58,6 @@ class MoviesViewHolder(
             .into(CustomBackgroundTarget(posterImage))
 
         setLikeIconColor(isFavoriteImage, movie)
-        isFavoriteImage.setOnClickListener { makeMovieFavorite(it as ImageView, movie) }
-    }
-
-    private fun makeMovieFavorite(likeIcon: ImageView, movie: Movie) {
-        movie.isFavorite = !movie.isFavorite
-        setLikeIconColor(likeIcon, movie)
-    }
-
-    private fun setLikeIconColor(likeIcon: ImageView, movie: Movie) {
-        val colorId = if (movie.isFavorite) R.color.radical_red else R.color.white
-        val color = ContextCompat.getColor(itemView.context, colorId)
-        ImageViewCompat.setImageTintList(likeIcon, ColorStateList.valueOf(color))
     }
 
 }

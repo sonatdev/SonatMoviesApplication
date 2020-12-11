@@ -11,6 +11,7 @@ import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
+import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +19,6 @@ import kotlinx.coroutines.withContext
 
 class MoviesFragment : Fragment() {
 
-    private lateinit var moviesDataSource: MoviesDataSource
     private lateinit var moviesRecycler: RecyclerView
     private var movieSelectionListener: MovieSelectionListener? = null
 
@@ -33,7 +33,6 @@ class MoviesFragment : Fragment() {
         }
 
         movieSelectionListener = context
-        moviesDataSource = MoviesDataSource(requireContext())
     }
 
     override fun onCreateView(
@@ -46,12 +45,18 @@ class MoviesFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         moviesRecycler = view.findViewById(R.id.recycler_movies)
-        moviesRecycler.adapter = MoviesRecyclerAdapter {
-            movieSelectionListener?.onMovieSelected(it.id)
-        }
+        moviesRecycler.adapter =
+            MoviesRecyclerAdapter(object : RecyclerItemWithLikeIconClickListener<Movie> {
+                override fun onLikeIconClick(item: Movie) =
+                    MoviesDataSource.addMovieToFavorites(item)
+
+                override fun onItemClick(item: Movie) {
+                    movieSelectionListener?.onMovieSelected(item.id)
+                }
+            })
 
         retrieveMoviesCoroutineScope.launch {
-            val movies = moviesDataSource.getMovies()
+            val movies = MoviesDataSource.getMovies(requireContext())
 
             withContext(Dispatchers.Main) { bindMoviesData(movies) }
         }

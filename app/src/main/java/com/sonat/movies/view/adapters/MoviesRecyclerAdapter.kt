@@ -5,10 +5,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
-import com.sonat.movies.view.listeners.RecyclerItemClickListener
+import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 
 class MoviesRecyclerAdapter(
-    private val movieClickListener: RecyclerItemClickListener<Movie>
+    private val movieClickListener: RecyclerItemWithLikeIconClickListener<Movie>,
 ) : RecyclerView.Adapter<MoviesViewHolder>() {
 
     private var movies: List<Movie> = emptyList()

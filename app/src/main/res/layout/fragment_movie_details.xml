@@ -32,8 +32,22 @@
             android:text="@string/common_label_back"
             android:textColor="@color/white"
             app:drawableStartCompat="@drawable/ic_back_arrow"
+            app:layout_constraintEnd_toStartOf="@+id/image_movie_like"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageView
+            android:id="@+id/image_movie_like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:src="@drawable/ic_like"
+            app:layout_constraintBottom_toBottomOf="@+id/text_back_btn"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_back_btn"
+            app:layout_constraintTop_toTopOf="@+id/text_back_btn"
+            app:tint="@color/white" />
 
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guideline_horizontal_04"
