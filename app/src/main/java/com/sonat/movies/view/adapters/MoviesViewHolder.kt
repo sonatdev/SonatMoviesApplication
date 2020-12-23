@@ -12,7 +12,7 @@ import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.view.glide.CustomBackgroundTarget
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
-import com.sonat.movies.view.util.setLikeIconColor
+import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
 
 class MoviesViewHolder(
     itemView: View,

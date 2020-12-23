@@ -65,7 +65,6 @@ class MoviesFragment : Fragment() {
     private fun bindMoviesData(movies: List<Movie>) =
         with(moviesRecycler.adapter as MoviesRecyclerAdapter) {
             bindMovies(movies)
-            notifyDataSetChanged()
         }
 
     override fun onDetach() {

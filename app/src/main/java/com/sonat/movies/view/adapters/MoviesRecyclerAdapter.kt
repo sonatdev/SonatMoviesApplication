@@ -27,5 +27,6 @@ class MoviesRecyclerAdapter(
 
     fun bindMovies(movies: List<Movie>) {
         this.movies = movies
+        notifyDataSetChanged()
     }
 }

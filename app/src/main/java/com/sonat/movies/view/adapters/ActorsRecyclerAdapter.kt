@@ -27,5 +27,6 @@ class ActorsRecyclerAdapter(
 
     fun bindActors(actors: List<Actor>) {
         this.actors = actors
+        notifyDataSetChanged()
     }
 }

@@ -10,6 +10,7 @@ import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -18,7 +19,7 @@ import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
 import com.sonat.movies.view.glide.CustomBackgroundTarget
-import com.sonat.movies.view.util.setLikeIconColor
+import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,6 +39,7 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var storylineTextView: TextView
     private lateinit var ratingBar: RatingBar
     private lateinit var isFavoriteImage: ImageView
+    private lateinit var castTextView: TextView
     private lateinit var actorsRecyclerView: RecyclerView
 
     private val retrieveMovieCoroutineScope = CoroutineScope(Dispatchers.IO)
@@ -74,6 +76,7 @@ class MovieDetailsFragment : Fragment() {
             storylineTextView = findViewById(R.id.text_movie_storyline_content)
             ratingBar = findViewById(R.id.rating_bar_movie)
             isFavoriteImage = findViewById(R.id.image_movie_like)
+            castTextView = findViewById(R.id.text_label_movie_cast)
             actorsRecyclerView = findViewById(R.id.recycler_actors)
         }
     }
@@ -121,9 +124,9 @@ class MovieDetailsFragment : Fragment() {
 
             setLikeIconColor(isFavoriteImage, movie)
 
+            castTextView.visibility = if (actors.isEmpty()) View.GONE else View.VISIBLE
             with(actorsRecyclerView.adapter as ActorsRecyclerAdapter) {
                 bindActors(actors)
-                notifyDataSetChanged()
             }
         }
     }
@@ -133,9 +136,7 @@ class MovieDetailsFragment : Fragment() {
 
         fun newInstance(movieId: Int) =
             MovieDetailsFragment().apply {
-                arguments = Bundle().apply {
-                    putInt(MOVIE_ID_PARAM, movieId)
-                }
+                arguments = bundleOf(MOVIE_ID_PARAM to movieId)
             }
     }
 }

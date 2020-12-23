@@ -13,11 +13,10 @@
         <ImageView
             android:id="@+id/image_movie_poster"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="220dp"
             android:contentDescription="@string/movie_details_movie_poster_image_descr"
             android:scaleType="fitXY"
             android:src="@drawable/gradient_mask_bw"
-            app:layout_constraintBottom_toTopOf="@+id/guideline_horizontal_04"
             app:layout_constraintTop_toTopOf="parent"
             tools:src="@tools:sample/avatars" />
 
@@ -48,13 +47,6 @@
             app:layout_constraintStart_toEndOf="@+id/text_back_btn"
             app:layout_constraintTop_toTopOf="@+id/text_back_btn"
             app:tint="@color/white" />
-
-        <androidx.constraintlayout.widget.Guideline
-            android:id="@+id/guideline_horizontal_04"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintGuide_percent="0.4" />
 
         <TextView
             android:id="@+id/text_movie_pg_rating"
@@ -177,7 +169,7 @@
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_actors"
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginEnd="12dp"
             android:orientation="horizontal"

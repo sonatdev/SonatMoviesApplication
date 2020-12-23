@@ -5,17 +5,20 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:background="@drawable/rectangle_bordered_8dp"
-    android:backgroundTint="@color/black_half_transparent">
+    android:background="@drawable/rectangle_bordered_8dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image_movie_poster"
         android:layout_width="wrap_content"
         android:layout_height="250dp"
         android:adjustViewBounds="true"
+        android:paddingStart="2dp"
+        android:paddingTop="2dp"
+        android:paddingEnd="2dp"
         android:src="@drawable/gradient_mask_bw"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/posterRoundedImageView"
         tools:background="@tools:sample/avatars" />
 
     <TextView
@@ -109,10 +112,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="2dp"
+        android:layout_marginBottom="8dp"
         android:textAllCaps="true"
         android:textColor="@color/storm_gray"
         android:textSize="10sp"
         android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="@id/text_movie_name"
         app:layout_constraintTop_toBottomOf="@id/text_movie_name"
         tools:text="100 min" />
