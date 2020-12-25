@@ -3,32 +3,29 @@ package com.sonat.movies.view
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
+import com.sonat.movies.view.common.ViewModelFactory
+import com.sonat.movies.view.details.MovieDetailsViewModel
 import com.sonat.movies.view.glide.CustomBackgroundTarget
 import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class MovieDetailsFragment : Fragment() {
+class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
-    private var movieId: Int = 0
     private lateinit var movie: Movie
+    private val movieViewModel: MovieDetailsViewModel by viewModels { ViewModelFactory() }
 
     private lateinit var backTextView: TextView
     private lateinit var posterImageView: ImageView
@@ -42,27 +39,15 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var castTextView: TextView
     private lateinit var actorsRecyclerView: RecyclerView
 
-    private val retrieveMovieCoroutineScope = CoroutineScope(Dispatchers.IO)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            movieId = it.getInt(MOVIE_ID_PARAM)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_movie_details, container, false)
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         findViews(view)
         setOnClickListeners()
-        getMovieAndUpdateViewState()
+
+        movieViewModel.movieLoadingState.observe(viewLifecycleOwner, this::setViewState)
+        arguments?.let { bundle ->
+            movieViewModel.getMovieById(bundle.getInt(MOVIE_ID_PARAM), requireContext())
+        }
     }
 
     private fun findViews(view: View) {
@@ -97,12 +82,21 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-    private fun getMovieAndUpdateViewState() {
-        retrieveMovieCoroutineScope.launch {
-            movie = MoviesDataSource.getMovieById(movieId, requireContext())
-            withContext(Dispatchers.Main) { bindMovieData(movie) }
+    private fun setViewState(state: MovieDetailsViewModel.ViewState) =
+        when (state) {
+            MovieDetailsViewModel.ViewState.Loading -> showLoading(isLoading = true)
+
+            is MovieDetailsViewModel.ViewState.Success -> {
+                movie = state.data
+                showLoading(isLoading = false)
+                bindMovieData(movie)
+            }
+
+            is MovieDetailsViewModel.ViewState.Error -> {
+                showLoading(isLoading = false)
+                showError(state.errorMessage)
+            }
         }
-    }
 
     private fun bindMovieData(movie: Movie) {
         val context = requireContext()
@@ -130,6 +124,13 @@ class MovieDetailsFragment : Fragment() {
             }
         }
     }
+
+    private fun showLoading(isLoading: Boolean) {
+        Toast.makeText(requireContext(), "LOADING: $isLoading...", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showError(errorMessage: String) =
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
 
     companion object {
         private const val MOVIE_ID_PARAM = "movieId"

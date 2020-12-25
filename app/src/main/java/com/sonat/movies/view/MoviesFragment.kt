@@ -2,27 +2,24 @@ package com.sonat.movies.view
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
+import com.sonat.movies.view.common.ViewModelFactory
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.sonat.movies.view.main.MovieListViewModel
 
-class MoviesFragment : Fragment() {
+class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
     private lateinit var moviesRecycler: RecyclerView
     private var movieSelectionListener: MovieSelectionListener? = null
-
-    private val retrieveMoviesCoroutineScope = CoroutineScope(Dispatchers.IO)
+    private val movieListViewModel: MovieListViewModel by viewModels { ViewModelFactory() }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -34,12 +31,6 @@ class MoviesFragment : Fragment() {
 
         movieSelectionListener = context
     }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_movies, container, false)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -55,10 +46,23 @@ class MoviesFragment : Fragment() {
                 }
             })
 
-        retrieveMoviesCoroutineScope.launch {
-            val movies = MoviesDataSource.getMovies(requireContext())
+        movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
+        movieListViewModel.getMovies(requireContext())
+    }
 
-            withContext(Dispatchers.Main) { bindMoviesData(movies) }
+    private fun setViewState(state: MovieListViewModel.ViewState) {
+        when (state) {
+            MovieListViewModel.ViewState.Loading -> showLoading(true)
+
+            is MovieListViewModel.ViewState.Success -> {
+                showLoading(isLoading = false)
+                bindMoviesData(state.data)
+            }
+
+            is MovieListViewModel.ViewState.Error -> {
+                showLoading(isLoading = false)
+                showError(state.errorMessage)
+            }
         }
     }
 
@@ -66,6 +70,13 @@ class MoviesFragment : Fragment() {
         with(moviesRecycler.adapter as MoviesRecyclerAdapter) {
             bindMovies(movies)
         }
+
+    private fun showLoading(isLoading: Boolean) {
+        Toast.makeText(requireContext(), "LOADING: $isLoading...", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showError(errorMessage: String) =
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
 
     override fun onDetach() {
         super.onDetach()
