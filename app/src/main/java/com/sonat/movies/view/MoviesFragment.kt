@@ -4,6 +4,7 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +19,8 @@ import com.sonat.movies.view.main.MovieListViewModel
 class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
     private lateinit var moviesRecycler: RecyclerView
+    private lateinit var progressBar: ContentLoadingProgressBar
+
     private var movieSelectionListener: MovieSelectionListener? = null
     private val movieListViewModel: MovieListViewModel by viewModels { ViewModelFactory() }
 
@@ -34,8 +37,18 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        findViews(view)
 
-        moviesRecycler = view.findViewById(R.id.recycler_movies)
+        movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
+        movieListViewModel.getMovies(requireContext())
+    }
+
+    private fun findViews(view: View) {
+        with(view) {
+            progressBar = findViewById(R.id.progress_bar)
+            moviesRecycler = findViewById(R.id.recycler_movies)
+        }
+
         moviesRecycler.adapter =
             MoviesRecyclerAdapter(object : RecyclerItemWithLikeIconClickListener<Movie> {
                 override fun onLikeIconClick(item: Movie) =
@@ -45,9 +58,6 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
                     movieSelectionListener?.onMovieSelected(item.id)
                 }
             })
-
-        movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
-        movieListViewModel.getMovies(requireContext())
     }
 
     private fun setViewState(state: MovieListViewModel.ViewState) {
@@ -72,7 +82,7 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
         }
 
     private fun showLoading(isLoading: Boolean) {
-        Toast.makeText(requireContext(), "LOADING: $isLoading...", Toast.LENGTH_SHORT).show()
+        if (isLoading) progressBar.show() else progressBar.hide()
     }
 
     private fun showError(errorMessage: String) =

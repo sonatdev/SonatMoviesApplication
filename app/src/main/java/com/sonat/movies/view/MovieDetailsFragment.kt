@@ -9,6 +9,8 @@ import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
@@ -36,8 +38,10 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     private lateinit var storylineTextView: TextView
     private lateinit var ratingBar: RatingBar
     private lateinit var isFavoriteImage: ImageView
-    private lateinit var castTextView: TextView
+    private lateinit var castLabelTextView: TextView
+    private lateinit var storylineLabelTextView: TextView
     private lateinit var actorsRecyclerView: RecyclerView
+    private lateinit var progressBar: ContentLoadingProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -61,8 +65,10 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
             storylineTextView = findViewById(R.id.text_movie_storyline_content)
             ratingBar = findViewById(R.id.rating_bar_movie)
             isFavoriteImage = findViewById(R.id.image_movie_like)
-            castTextView = findViewById(R.id.text_label_movie_cast)
+            castLabelTextView = findViewById(R.id.text_label_movie_cast)
+            storylineLabelTextView = findViewById(R.id.text_label_movie_storyline)
             actorsRecyclerView = findViewById(R.id.recycler_actors)
+            progressBar = findViewById(R.id.progress_bar)
         }
     }
 
@@ -89,6 +95,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
             is MovieDetailsViewModel.ViewState.Success -> {
                 movie = state.data
                 showLoading(isLoading = false)
+                showMovieViews()
                 bindMovieData(movie)
             }
 
@@ -97,6 +104,12 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
                 showError(state.errorMessage)
             }
         }
+
+    private fun showMovieViews() {
+        ratingBar.isVisible = true
+        isFavoriteImage.isVisible = true
+        storylineTextView.isVisible = true
+    }
 
     private fun bindMovieData(movie: Movie) {
         val context = requireContext()
@@ -118,7 +131,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
             setLikeIconColor(isFavoriteImage, movie)
 
-            castTextView.visibility = if (actors.isEmpty()) View.GONE else View.VISIBLE
+            castLabelTextView.isVisible = actors.isNotEmpty()
             with(actorsRecyclerView.adapter as ActorsRecyclerAdapter) {
                 bindActors(actors)
             }
@@ -126,7 +139,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     }
 
     private fun showLoading(isLoading: Boolean) {
-        Toast.makeText(requireContext(), "LOADING: $isLoading...", Toast.LENGTH_SHORT).show()
+        if (isLoading) progressBar.show() else progressBar.hide()
     }
 
     private fun showError(errorMessage: String) =
