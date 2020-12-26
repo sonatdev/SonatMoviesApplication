@@ -19,15 +19,20 @@ import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
-import com.sonat.movies.view.common.ViewModelFactory
 import com.sonat.movies.view.details.MovieDetailsViewModel
+import com.sonat.movies.view.details.MovieDetailsViewModelFactory
 import com.sonat.movies.view.glide.CustomBackgroundTarget
 import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
 
 class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
     private lateinit var movie: Movie
-    private val movieViewModel: MovieDetailsViewModel by viewModels { ViewModelFactory() }
+    private val movieViewModel: MovieDetailsViewModel by viewModels {
+        MovieDetailsViewModelFactory(
+            arguments?.getInt(MOVIE_ID_PARAM)!!,
+            requireContext().applicationContext
+        )
+    }
 
     private lateinit var backTextView: TextView
     private lateinit var posterImageView: ImageView
@@ -49,9 +54,6 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         setOnClickListeners()
 
         movieViewModel.movieLoadingState.observe(viewLifecycleOwner, this::setViewState)
-        arguments?.let { bundle ->
-            movieViewModel.getMovieById(bundle.getInt(MOVIE_ID_PARAM), requireContext())
-        }
     }
 
     private fun findViews(view: View) {
@@ -75,7 +77,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     private fun setOnClickListeners() {
         backTextView.setOnClickListener { activity?.onBackPressed() }
         isFavoriteImage.setOnClickListener {
-            MoviesDataSource.addMovieToFavorites(movie)
+            MoviesDataSource(requireContext().applicationContext).addMovieToFavorites(movie)
             setLikeIconColor(it as ImageView, movie)
         }
 

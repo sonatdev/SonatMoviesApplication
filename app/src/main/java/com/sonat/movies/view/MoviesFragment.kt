@@ -12,9 +12,9 @@ import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
-import com.sonat.movies.view.common.ViewModelFactory
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 import com.sonat.movies.view.main.MovieListViewModel
+import com.sonat.movies.view.main.MovieListViewModelFactory
 
 class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
@@ -22,7 +22,9 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
     private lateinit var progressBar: ContentLoadingProgressBar
 
     private var movieSelectionListener: MovieSelectionListener? = null
-    private val movieListViewModel: MovieListViewModel by viewModels { ViewModelFactory() }
+    private val movieListViewModel: MovieListViewModel by viewModels {
+        MovieListViewModelFactory(requireContext().applicationContext)
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -40,7 +42,6 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
         findViews(view)
 
         movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
-        movieListViewModel.getMovies(requireContext())
     }
 
     private fun findViews(view: View) {
@@ -52,7 +53,7 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
         moviesRecycler.adapter =
             MoviesRecyclerAdapter(object : RecyclerItemWithLikeIconClickListener<Movie> {
                 override fun onLikeIconClick(item: Movie) =
-                    MoviesDataSource.addMovieToFavorites(item)
+                    MoviesDataSource(requireContext().applicationContext).addMovieToFavorites(item)
 
                 override fun onItemClick(item: Movie) {
                     movieSelectionListener?.onMovieSelected(item.id)

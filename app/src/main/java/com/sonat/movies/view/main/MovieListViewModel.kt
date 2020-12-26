@@ -1,6 +1,5 @@
 package com.sonat.movies.view.main
 
-import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,11 +18,15 @@ class MovieListViewModel(
 
     private val _mutableMovieListLiveData = MutableLiveData<ViewState>()
 
-    fun getMovies(context: Context) =
+    init {
+        getMovies()
+    }
+
+    private fun getMovies() =
         viewModelScope.launch {
             _mutableMovieListLiveData.value = ViewState.Loading
 
-            val newViewState = when (val movieListResult = moviesDataSource.getMovies(context)) {
+            val newViewState = when (val movieListResult = moviesDataSource.getMovies()) {
                 is MoviesResult.MoviesList.Success -> ViewState.Success(movieListResult.data)
                 is MoviesResult.MoviesList.Error -> ViewState.Error(movieListResult.errorMessage)
             }

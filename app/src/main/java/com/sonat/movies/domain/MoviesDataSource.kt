@@ -7,11 +7,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 
-object MoviesDataSource {
+class MoviesDataSource(val context: Context) {
 
-    private val favoriteMovieIdList = mutableSetOf<Int>()
-
-    suspend fun getMovies(context: Context) =
+    suspend fun getMovies() =
         withContext(Dispatchers.IO) {
             delay(500)
 
@@ -24,12 +22,12 @@ object MoviesDataSource {
             }
         }
 
-    suspend fun getMovieById(movieId: Int, context: Context) =
+    suspend fun getMovieById(movieId: Int) =
         withContext(Dispatchers.IO) {
             delay(500)
 
             try {
-                when (val movieListResult = getMovies(context)) {
+                when (val movieListResult = getMovies()) {
                     is MoviesResult.MoviesList.Success -> {
                         val movie = movieListResult.data.first { it.id == movieId }
                         MoviesResult.MovieDetails.Success(movie)
@@ -53,7 +51,8 @@ object MoviesDataSource {
         }
     }
 
-    // ToDo: temporal solution, DI is needed
-    fun getInstance() = this
+    private companion object {
+        private val favoriteMovieIdList = mutableSetOf<Int>()
+    }
 
 }
