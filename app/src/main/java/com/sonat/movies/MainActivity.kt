@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity(), MoviesFragment.MovieSelectionListener 
         }
     }
 
-    override fun onMovieSelected(movieId: String) {
+    override fun onMovieSelected(movieId: Int) {
         supportFragmentManager.beginTransaction()
             .addToBackStack(null)
             .replace(R.id.main_container, MovieDetailsFragment.newInstance(movieId))

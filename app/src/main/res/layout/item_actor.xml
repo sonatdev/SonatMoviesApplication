@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_margin="4dp">
 
-    <ImageView
+    <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/image_actor_photo"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
         android:adjustViewBounds="true"
-        app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@tools:sample/avatars"
-        app:srcCompat="@drawable/actor_robert_downey_jr" />
+        app:shapeAppearanceOverlay="@style/actorRoundedImageView"
+        tools:src="@tools:sample/avatars" />
 
     <TextView
         android:id="@+id/text_actor_name"
@@ -25,9 +24,9 @@
         android:textColor="@color/alto"
         android:textSize="12sp"
         android:textStyle="bold"
-        tools:text="@tools:sample/full_names"
         app:layout_constraintEnd_toEndOf="@+id/image_actor_photo"
         app:layout_constraintStart_toStartOf="@+id/image_actor_photo"
-        app:layout_constraintTop_toBottomOf="@+id/image_actor_photo" />
+        app:layout_constraintTop_toBottomOf="@+id/image_actor_photo"
+        tools:text="@tools:sample/full_names" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

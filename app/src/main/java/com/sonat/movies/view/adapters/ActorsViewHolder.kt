@@ -1,9 +1,12 @@
 package com.sonat.movies.view.adapters
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Actor
 import com.sonat.movies.view.listeners.RecyclerItemClickListener
@@ -25,6 +28,11 @@ class ActorsViewHolder(
     fun onBind(actor: Actor) {
         this.actor = actor
         nameText.text = actor.name
-        photoImage.setImageResource(actor.photoResId)
+
+        Glide.with(itemView.context)
+            .load(actor.photoUrl)
+            .centerCrop()
+            .placeholder(ColorDrawable(Color.BLACK))
+            .into(photoImage)
     }
 }
