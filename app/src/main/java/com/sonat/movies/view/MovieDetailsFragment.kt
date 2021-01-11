@@ -17,8 +17,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
-import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
+import com.sonat.movies.view.common.ViewState
 import com.sonat.movies.view.details.MovieDetailsViewModel
 import com.sonat.movies.view.details.MovieDetailsViewModelFactory
 import com.sonat.movies.view.glide.CustomBackgroundTarget
@@ -26,7 +26,6 @@ import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
 
 class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
-    private lateinit var movie: Movie
     private val movieViewModel: MovieDetailsViewModel by viewModels {
         MovieDetailsViewModelFactory(
             arguments?.getInt(MOVIE_ID_PARAM)!!,
@@ -77,8 +76,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
     private fun setOnClickListeners() {
         backTextView.setOnClickListener { activity?.onBackPressed() }
         isFavoriteImage.setOnClickListener {
-            MoviesDataSource(requireContext().applicationContext).addMovieToFavorites(movie)
-            setLikeIconColor(it as ImageView, movie)
+            movieViewModel.onFavoriteIconClick(it as ImageView)
         }
 
         actorsRecyclerView.adapter = ActorsRecyclerAdapter {
@@ -90,18 +88,17 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         }
     }
 
-    private fun setViewState(state: MovieDetailsViewModel.ViewState) =
+    private fun setViewState(state: ViewState<Movie>) =
         when (state) {
-            MovieDetailsViewModel.ViewState.Loading -> showLoading(isLoading = true)
+            is ViewState.Loading -> showLoading(isLoading = true)
 
-            is MovieDetailsViewModel.ViewState.Success -> {
-                movie = state.data
+            is ViewState.Success -> {
                 showLoading(isLoading = false)
                 showMovieViews()
-                bindMovieData(movie)
+                bindMovieData(state.data)
             }
 
-            is MovieDetailsViewModel.ViewState.Error -> {
+            is ViewState.Error -> {
                 showLoading(isLoading = false)
                 showError(state.errorMessage)
             }
@@ -131,7 +128,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
                 .placeholder(ColorDrawable(Color.BLACK))
                 .into(CustomBackgroundTarget(posterImageView))
 
-            setLikeIconColor(isFavoriteImage, movie)
+            setLikeIconColor(isFavoriteImage, isFavorite)
 
             castLabelTextView.isVisible = actors.isNotEmpty()
             with(actorsRecyclerView.adapter as ActorsRecyclerAdapter) {

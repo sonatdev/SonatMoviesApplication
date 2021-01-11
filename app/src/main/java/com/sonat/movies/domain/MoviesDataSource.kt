@@ -16,9 +16,9 @@ class MoviesDataSource(val context: Context) {
             try {
                 val movies = loadMovies(context)
                     .onEach { if (favoriteMovieIdList.contains(it.id)) it.isFavorite = true }
-                MoviesResult.MoviesList.Success(movies)
+                LoadResult.Success(movies)
             } catch (e: Exception) {
-                MoviesResult.MoviesList.Error(e.message.orEmpty())
+                LoadResult.Error(e.message.orEmpty())
             }
         }
 
@@ -28,17 +28,15 @@ class MoviesDataSource(val context: Context) {
 
             try {
                 when (val movieListResult = getMovies()) {
-                    is MoviesResult.MoviesList.Success -> {
+                    is LoadResult.Success -> {
                         val movie = movieListResult.data.first { it.id == movieId }
-                        MoviesResult.MovieDetails.Success(movie)
+                        LoadResult.Success(movie)
                     }
 
-                    is MoviesResult.MoviesList.Error -> MoviesResult.MovieDetails.Error(
-                        movieListResult.errorMessage
-                    )
+                    is LoadResult.Error -> LoadResult.Error(movieListResult.errorMessage)
                 }
             } catch (e: NoSuchElementException) {
-                MoviesResult.MovieDetails.Error(e.message.orEmpty())
+                LoadResult.Error(e.message.orEmpty())
             }
         }
 

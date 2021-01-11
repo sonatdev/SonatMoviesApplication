@@ -3,6 +3,7 @@ package com.sonat.movies.view
 import android.content.Context
 import android.os.Bundle
 import android.view.View
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
@@ -10,8 +11,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
-import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
+import com.sonat.movies.view.common.ViewState
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 import com.sonat.movies.view.main.MovieListViewModel
 import com.sonat.movies.view.main.MovieListViewModelFactory
@@ -52,8 +53,9 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
         moviesRecycler.adapter =
             MoviesRecyclerAdapter(object : RecyclerItemWithLikeIconClickListener<Movie> {
-                override fun onLikeIconClick(item: Movie) =
-                    MoviesDataSource(requireContext().applicationContext).addMovieToFavorites(item)
+                override fun onLikeIconClick(likeIcon: ImageView, item: Movie) {
+                    movieListViewModel.onFavoriteIconClick(likeIcon, item)
+                }
 
                 override fun onItemClick(item: Movie) {
                     movieSelectionListener?.onMovieSelected(item.id)
@@ -61,16 +63,16 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
             })
     }
 
-    private fun setViewState(state: MovieListViewModel.ViewState) {
+    private fun setViewState(state: ViewState<List<Movie>>) {
         when (state) {
-            MovieListViewModel.ViewState.Loading -> showLoading(true)
+            is ViewState.Loading -> showLoading(true)
 
-            is MovieListViewModel.ViewState.Success -> {
+            is ViewState.Success -> {
                 showLoading(isLoading = false)
                 bindMoviesData(state.data)
             }
 
-            is MovieListViewModel.ViewState.Error -> {
+            is ViewState.Error -> {
                 showLoading(isLoading = false)
                 showError(state.errorMessage)
             }

@@ -1,22 +1,25 @@
 package com.sonat.movies.view.main
 
+import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sonat.movies.data.models.Movie
+import com.sonat.movies.domain.LoadResult
 import com.sonat.movies.domain.MoviesDataSource
-import com.sonat.movies.domain.MoviesResult
+import com.sonat.movies.view.common.ViewState
+import com.sonat.movies.view.util.ImageUtils
 import kotlinx.coroutines.launch
 
 class MovieListViewModel(
     private val moviesDataSource: MoviesDataSource
 ) : ViewModel() {
 
-    val movieListLoadingState: LiveData<ViewState>
+    val movieListLoadingState: LiveData<ViewState<List<Movie>>>
         get() = _mutableMovieListLiveData
 
-    private val _mutableMovieListLiveData = MutableLiveData<ViewState>()
+    private val _mutableMovieListLiveData = MutableLiveData<ViewState<List<Movie>>>()
 
     init {
         getMovies()
@@ -24,22 +27,19 @@ class MovieListViewModel(
 
     private fun getMovies() =
         viewModelScope.launch {
-            _mutableMovieListLiveData.value = ViewState.Loading
+            _mutableMovieListLiveData.value = ViewState.Loading()
 
             val newViewState = when (val movieListResult = moviesDataSource.getMovies()) {
-                is MoviesResult.MoviesList.Success -> ViewState.Success(movieListResult.data)
-                is MoviesResult.MoviesList.Error -> ViewState.Error(movieListResult.errorMessage)
+                is LoadResult.Success -> ViewState.Success(movieListResult.data)
+                is LoadResult.Error -> ViewState.Error(movieListResult.errorMessage)
             }
 
             _mutableMovieListLiveData.value = newViewState
         }
 
-    sealed class ViewState {
-
-        object Loading : ViewState()
-
-        class Success(val data: List<Movie>) : ViewState()
-
-        class Error(val errorMessage: String) : ViewState()
-    }
+    fun onFavoriteIconClick(likeIcon: ImageView, movie: Movie) =
+        viewModelScope.launch {
+            moviesDataSource.addMovieToFavorites(movie)
+            ImageUtils.setLikeIconColor(likeIcon, movie.isFavorite)
+        }
 }
