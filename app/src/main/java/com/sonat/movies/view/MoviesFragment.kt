@@ -3,7 +3,6 @@ package com.sonat.movies.view
 import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
@@ -12,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
+import com.sonat.movies.view.common.ItemWithPosition
 import com.sonat.movies.view.common.ViewState
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 import com.sonat.movies.view.main.MovieListViewModel
@@ -43,6 +43,7 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
         findViews(view)
 
         movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
+        movieListViewModel.movieFavoriteState.observe(viewLifecycleOwner, this::updateItemViewState)
     }
 
     private fun findViews(view: View) {
@@ -53,8 +54,8 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
         moviesRecycler.adapter =
             MoviesRecyclerAdapter(object : RecyclerItemWithLikeIconClickListener<Movie> {
-                override fun onLikeIconClick(likeIcon: ImageView, item: Movie) {
-                    movieListViewModel.onFavoriteIconClick(likeIcon, item)
+                override fun onLikeIconClick(item: Movie, position: Int) {
+                    movieListViewModel.onFavoriteIconClick(item, position)
                 }
 
                 override fun onItemClick(item: Movie) {
@@ -68,8 +69,24 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
             is ViewState.Loading -> showLoading(true)
 
             is ViewState.Success -> {
-                showLoading(isLoading = false)
+                showLoading(false)
                 bindMoviesData(state.data)
+            }
+
+            is ViewState.Error -> {
+                showLoading(isLoading = false)
+                showError(state.errorMessage)
+            }
+        }
+    }
+
+    private fun updateItemViewState(state: ViewState<ItemWithPosition<Movie>>) {
+        when (state) {
+            is ViewState.Loading -> showLoading(true)
+
+            is ViewState.Success -> {
+                showLoading(false)
+                updateMovieItem(state.data.item, state.data.position)
             }
 
             is ViewState.Error -> {
@@ -82,6 +99,11 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
     private fun bindMoviesData(movies: List<Movie>) =
         with(moviesRecycler.adapter as MoviesRecyclerAdapter) {
             bindMovies(movies)
+        }
+
+    private fun updateMovieItem(movie: Movie, position: Int) =
+        with(moviesRecycler.adapter as MoviesRecyclerAdapter) {
+            updateMovieItem(movie, position)
         }
 
     private fun showLoading(isLoading: Boolean) {

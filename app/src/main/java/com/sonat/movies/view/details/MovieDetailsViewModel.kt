@@ -1,6 +1,5 @@
 package com.sonat.movies.view.details
 
-import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,7 +8,6 @@ import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.LoadResult
 import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.common.ViewState
-import com.sonat.movies.view.util.ImageUtils
 import kotlinx.coroutines.launch
 
 class MovieDetailsViewModel(
@@ -43,10 +41,9 @@ class MovieDetailsViewModel(
             _mutableMovieLoadingState.value = newViewState
         }
 
-    fun onFavoriteIconClick(likeIcon: ImageView) =
+    fun onFavoriteIconClick() =
         viewModelScope.launch {
-            moviesDataSource.addMovieToFavorites(movie)
-            // не нарушается здесь зона ответственности viewModel, ведь она управляет состоянием view?
-            ImageUtils.setLikeIconColor(likeIcon, movie.isFavorite)
+            movie = moviesDataSource.addMovieToFavorites(movie)
+            _mutableMovieLoadingState.value = ViewState.Success(movie)
         }
 }

@@ -1,6 +1,5 @@
 package com.sonat.movies.view.main
 
-import android.widget.ImageView
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -8,8 +7,8 @@ import androidx.lifecycle.viewModelScope
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.LoadResult
 import com.sonat.movies.domain.MoviesDataSource
+import com.sonat.movies.view.common.ItemWithPosition
 import com.sonat.movies.view.common.ViewState
-import com.sonat.movies.view.util.ImageUtils
 import kotlinx.coroutines.launch
 
 class MovieListViewModel(
@@ -18,8 +17,11 @@ class MovieListViewModel(
 
     val movieListLoadingState: LiveData<ViewState<List<Movie>>>
         get() = _mutableMovieListLiveData
+    val movieFavoriteState: LiveData<ViewState<ItemWithPosition<Movie>>>
+        get() = _mutableMovieFavoriteState
 
     private val _mutableMovieListLiveData = MutableLiveData<ViewState<List<Movie>>>()
+    private val _mutableMovieFavoriteState = MutableLiveData<ViewState<ItemWithPosition<Movie>>>()
 
     init {
         getMovies()
@@ -37,9 +39,10 @@ class MovieListViewModel(
             _mutableMovieListLiveData.value = newViewState
         }
 
-    fun onFavoriteIconClick(likeIcon: ImageView, movie: Movie) =
+    fun onFavoriteIconClick(movie: Movie, position: Int) =
         viewModelScope.launch {
-            moviesDataSource.addMovieToFavorites(movie)
-            ImageUtils.setLikeIconColor(likeIcon, movie.isFavorite)
+            val updatedMovie = moviesDataSource.addMovieToFavorites(movie)
+            _mutableMovieFavoriteState.value =
+                ViewState.Success(ItemWithPosition(updatedMovie, position))
         }
 }

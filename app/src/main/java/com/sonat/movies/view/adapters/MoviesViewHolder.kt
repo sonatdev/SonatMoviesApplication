@@ -34,7 +34,7 @@ class MoviesViewHolder(
         itemView.setOnClickListener { movieClickListener.onItemClick(movie) }
 
         isFavoriteImage.setOnClickListener {
-            movieClickListener.onLikeIconClick(it as ImageView, movie)
+            movieClickListener.onLikeIconClick(movie, adapterPosition)
         }
     }
 

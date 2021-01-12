@@ -12,5 +12,5 @@ data class Movie(
     val storyline: String,
     val genres: List<Genre>,
     val actors: List<Actor> = emptyList(),
-    var isFavorite: Boolean = false,
+    val isFavorite: Boolean = false,
 )

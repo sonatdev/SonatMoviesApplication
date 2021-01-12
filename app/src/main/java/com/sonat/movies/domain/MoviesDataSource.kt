@@ -15,7 +15,7 @@ class MoviesDataSource(val context: Context) {
 
             try {
                 val movies = loadMovies(context)
-                    .onEach { if (favoriteMovieIdList.contains(it.id)) it.isFavorite = true }
+                    .map { if (favoriteMovieIdList.contains(it.id)) it.copy(isFavorite = true) else it }
                 LoadResult.Success(movies)
             } catch (e: Exception) {
                 LoadResult.Error(e.message.orEmpty())
@@ -40,13 +40,15 @@ class MoviesDataSource(val context: Context) {
             }
         }
 
-    fun addMovieToFavorites(movie: Movie) {
-        movie.isFavorite = !movie.isFavorite
-        if (movie.isFavorite) {
+    fun addMovieToFavorites(movie: Movie): Movie {
+        val updatedMovie = movie.copy(isFavorite = !movie.isFavorite)
+        if (updatedMovie.isFavorite) {
             favoriteMovieIdList.add(movie.id)
         } else {
             favoriteMovieIdList.remove(movie.id)
         }
+
+        return updatedMovie
     }
 
     private companion object {

@@ -75,9 +75,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
     private fun setOnClickListeners() {
         backTextView.setOnClickListener { activity?.onBackPressed() }
-        isFavoriteImage.setOnClickListener {
-            movieViewModel.onFavoriteIconClick(it as ImageView)
-        }
+        isFavoriteImage.setOnClickListener { movieViewModel.onFavoriteIconClick() }
 
         actorsRecyclerView.adapter = ActorsRecyclerAdapter {
             Toast.makeText(
