@@ -19,6 +19,7 @@ import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
 import com.sonat.movies.view.common.ViewState
+import com.sonat.movies.view.common.ViewStateEventObserver
 import com.sonat.movies.view.details.MovieDetailsViewModel
 import com.sonat.movies.view.details.MovieDetailsViewModelFactory
 import com.sonat.movies.view.glide.CustomBackgroundTarget
@@ -52,7 +53,10 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
         findViews(view)
         setOnClickListeners()
 
-        movieViewModel.movieLoadingState.observe(viewLifecycleOwner, this::setViewState)
+        movieViewModel.movieLoadingState.observe(
+            viewLifecycleOwner,
+            ViewStateEventObserver(this::setViewState)
+        )
     }
 
     private fun findViews(view: View) {

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sonat.movies.data.models.Movie
 import com.sonat.movies.domain.LoadResult
 import com.sonat.movies.domain.MoviesDataSource
+import com.sonat.movies.view.common.Event
 import com.sonat.movies.view.common.ViewState
 import kotlinx.coroutines.launch
 
@@ -15,11 +16,11 @@ class MovieDetailsViewModel(
     private val moviesDataSource: MoviesDataSource
 ) : ViewModel() {
 
-    val movieLoadingState: LiveData<ViewState<Movie>>
+    val movieLoadingState: LiveData<Event<ViewState<Movie>>>
         get() = _mutableMovieLoadingState
 
     private lateinit var movie: Movie
-    private val _mutableMovieLoadingState = MutableLiveData<ViewState<Movie>>()
+    private val _mutableMovieLoadingState = MutableLiveData<Event<ViewState<Movie>>>()
 
     init {
         getMovieById(movieId)
@@ -27,7 +28,7 @@ class MovieDetailsViewModel(
 
     private fun getMovieById(movieId: Int) =
         viewModelScope.launch {
-            _mutableMovieLoadingState.value = ViewState.Loading()
+            _mutableMovieLoadingState.value = Event(ViewState.Loading())
 
             val newViewState = when (val movieResult = moviesDataSource.getMovieById(movieId)) {
                 is LoadResult.Success -> {
@@ -38,12 +39,12 @@ class MovieDetailsViewModel(
                 is LoadResult.Error -> ViewState.Error(movieResult.errorMessage)
             }
 
-            _mutableMovieLoadingState.value = newViewState
+            _mutableMovieLoadingState.value = Event(newViewState)
         }
 
     fun onFavoriteIconClick() =
         viewModelScope.launch {
             movie = moviesDataSource.addMovieToFavorites(movie)
-            _mutableMovieLoadingState.value = ViewState.Success(movie)
+            _mutableMovieLoadingState.value = Event(ViewState.Success(movie))
         }
 }

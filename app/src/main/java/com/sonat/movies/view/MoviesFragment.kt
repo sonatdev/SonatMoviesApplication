@@ -13,6 +13,7 @@ import com.sonat.movies.data.models.Movie
 import com.sonat.movies.view.adapters.MoviesRecyclerAdapter
 import com.sonat.movies.view.common.ItemWithPosition
 import com.sonat.movies.view.common.ViewState
+import com.sonat.movies.view.common.ViewStateEventObserver
 import com.sonat.movies.view.listeners.RecyclerItemWithLikeIconClickListener
 import com.sonat.movies.view.main.MovieListViewModel
 import com.sonat.movies.view.main.MovieListViewModelFactory
@@ -42,8 +43,10 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
         super.onViewCreated(view, savedInstanceState)
         findViews(view)
 
-        movieListViewModel.movieListLoadingState.observe(viewLifecycleOwner, this::setViewState)
-        movieListViewModel.movieFavoriteState.observe(viewLifecycleOwner, this::updateItemViewState)
+        movieListViewModel.movieListLoadingState
+            .observe(viewLifecycleOwner, ViewStateEventObserver(this::setViewState))
+        movieListViewModel.movieFavoriteState
+            .observe(viewLifecycleOwner, ViewStateEventObserver(this::updateItemViewState))
     }
 
     private fun findViews(view: View) {
