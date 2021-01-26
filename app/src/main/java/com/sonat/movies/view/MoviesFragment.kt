@@ -25,7 +25,7 @@ class MoviesFragment : Fragment(R.layout.fragment_movies) {
 
     private var movieSelectionListener: MovieSelectionListener? = null
     private val movieListViewModel: MovieListViewModel by viewModels {
-        MovieListViewModelFactory(requireContext().applicationContext)
+        MovieListViewModelFactory()
     }
 
     override fun onAttach(context: Context) {

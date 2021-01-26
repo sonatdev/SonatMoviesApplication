@@ -29,8 +29,7 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
     private val movieViewModel: MovieDetailsViewModel by viewModels {
         MovieDetailsViewModelFactory(
-            arguments?.getInt(MOVIE_ID_PARAM)!!,
-            requireContext().applicationContext
+            requireNotNull(arguments?.getInt(MOVIE_ID_PARAM))
         )
     }
 
