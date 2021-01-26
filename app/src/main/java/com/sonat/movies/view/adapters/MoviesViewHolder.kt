@@ -32,9 +32,9 @@ class MoviesViewHolder(
 
     init {
         itemView.setOnClickListener { movieClickListener.onItemClick(movie) }
+
         isFavoriteImage.setOnClickListener {
-            movieClickListener.onLikeIconClick(movie)
-            setLikeIconColor(it as ImageView, movie)
+            movieClickListener.onLikeIconClick(movie, adapterPosition)
         }
     }
 
@@ -57,7 +57,7 @@ class MoviesViewHolder(
             .placeholder(ColorDrawable(Color.BLACK))
             .into(CustomBackgroundTarget(posterImage))
 
-        setLikeIconColor(isFavoriteImage, movie)
+        setLikeIconColor(isFavoriteImage, movie.isFavorite)
     }
 
 }

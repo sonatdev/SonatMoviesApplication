@@ -11,7 +11,7 @@ class MoviesRecyclerAdapter(
     private val movieClickListener: RecyclerItemWithLikeIconClickListener<Movie>,
 ) : RecyclerView.Adapter<MoviesViewHolder>() {
 
-    private var movies: List<Movie> = emptyList()
+    private var movies = mutableListOf<Movie>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
         MoviesViewHolder(
@@ -26,7 +26,14 @@ class MoviesRecyclerAdapter(
     override fun getItemCount() = movies.size
 
     fun bindMovies(movies: List<Movie>) {
-        this.movies = movies
+        this.movies.clear()
+        this.movies.addAll(movies)
+
         notifyDataSetChanged()
+    }
+
+    fun updateMovieItem(movie: Movie, position: Int) {
+        this.movies[position] = movie
+        notifyItemChanged(position)
     }
 }

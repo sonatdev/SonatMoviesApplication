@@ -3,32 +3,36 @@ package com.sonat.movies.view
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.os.bundleOf
+import androidx.core.view.isVisible
+import androidx.core.widget.ContentLoadingProgressBar
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sonat.movies.R
 import com.sonat.movies.data.models.Movie
-import com.sonat.movies.domain.MoviesDataSource
 import com.sonat.movies.view.adapters.ActorsRecyclerAdapter
+import com.sonat.movies.view.common.ViewState
+import com.sonat.movies.view.common.ViewStateEventObserver
+import com.sonat.movies.view.details.MovieDetailsViewModel
+import com.sonat.movies.view.details.MovieDetailsViewModelFactory
 import com.sonat.movies.view.glide.CustomBackgroundTarget
 import com.sonat.movies.view.util.ImageUtils.setLikeIconColor
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
-class MovieDetailsFragment : Fragment() {
+class MovieDetailsFragment : Fragment(R.layout.fragment_movie_details) {
 
-    private var movieId: Int = 0
-    private lateinit var movie: Movie
+    private val movieViewModel: MovieDetailsViewModel by viewModels {
+        MovieDetailsViewModelFactory(
+            arguments?.getInt(MOVIE_ID_PARAM)!!,
+            requireContext().applicationContext
+        )
+    }
 
     private lateinit var backTextView: TextView
     private lateinit var posterImageView: ImageView
@@ -39,30 +43,20 @@ class MovieDetailsFragment : Fragment() {
     private lateinit var storylineTextView: TextView
     private lateinit var ratingBar: RatingBar
     private lateinit var isFavoriteImage: ImageView
-    private lateinit var castTextView: TextView
+    private lateinit var castLabelTextView: TextView
+    private lateinit var storylineLabelTextView: TextView
     private lateinit var actorsRecyclerView: RecyclerView
-
-    private val retrieveMovieCoroutineScope = CoroutineScope(Dispatchers.IO)
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        arguments?.let {
-            movieId = it.getInt(MOVIE_ID_PARAM)
-        }
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View = inflater.inflate(R.layout.fragment_movie_details, container, false)
+    private lateinit var progressBar: ContentLoadingProgressBar
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         findViews(view)
         setOnClickListeners()
-        getMovieAndUpdateViewState()
+
+        movieViewModel.movieLoadingState.observe(
+            viewLifecycleOwner,
+            ViewStateEventObserver(this::setViewState)
+        )
     }
 
     private fun findViews(view: View) {
@@ -76,17 +70,16 @@ class MovieDetailsFragment : Fragment() {
             storylineTextView = findViewById(R.id.text_movie_storyline_content)
             ratingBar = findViewById(R.id.rating_bar_movie)
             isFavoriteImage = findViewById(R.id.image_movie_like)
-            castTextView = findViewById(R.id.text_label_movie_cast)
+            castLabelTextView = findViewById(R.id.text_label_movie_cast)
+            storylineLabelTextView = findViewById(R.id.text_label_movie_storyline)
             actorsRecyclerView = findViewById(R.id.recycler_actors)
+            progressBar = findViewById(R.id.progress_bar)
         }
     }
 
     private fun setOnClickListeners() {
         backTextView.setOnClickListener { activity?.onBackPressed() }
-        isFavoriteImage.setOnClickListener {
-            MoviesDataSource.addMovieToFavorites(movie)
-            setLikeIconColor(it as ImageView, movie)
-        }
+        isFavoriteImage.setOnClickListener { movieViewModel.onFavoriteIconClick() }
 
         actorsRecyclerView.adapter = ActorsRecyclerAdapter {
             Toast.makeText(
@@ -97,11 +90,26 @@ class MovieDetailsFragment : Fragment() {
         }
     }
 
-    private fun getMovieAndUpdateViewState() {
-        retrieveMovieCoroutineScope.launch {
-            movie = MoviesDataSource.getMovieById(movieId, requireContext())
-            withContext(Dispatchers.Main) { bindMovieData(movie) }
+    private fun setViewState(state: ViewState<Movie>) =
+        when (state) {
+            is ViewState.Loading -> showLoading(isLoading = true)
+
+            is ViewState.Success -> {
+                showLoading(isLoading = false)
+                showMovieViews()
+                bindMovieData(state.data)
+            }
+
+            is ViewState.Error -> {
+                showLoading(isLoading = false)
+                showError(state.errorMessage)
+            }
         }
+
+    private fun showMovieViews() {
+        ratingBar.isVisible = true
+        isFavoriteImage.isVisible = true
+        storylineTextView.isVisible = true
     }
 
     private fun bindMovieData(movie: Movie) {
@@ -122,14 +130,21 @@ class MovieDetailsFragment : Fragment() {
                 .placeholder(ColorDrawable(Color.BLACK))
                 .into(CustomBackgroundTarget(posterImageView))
 
-            setLikeIconColor(isFavoriteImage, movie)
+            setLikeIconColor(isFavoriteImage, isFavorite)
 
-            castTextView.visibility = if (actors.isEmpty()) View.GONE else View.VISIBLE
+            castLabelTextView.isVisible = actors.isNotEmpty()
             with(actorsRecyclerView.adapter as ActorsRecyclerAdapter) {
                 bindActors(actors)
             }
         }
     }
+
+    private fun showLoading(isLoading: Boolean) {
+        if (isLoading) progressBar.show() else progressBar.hide()
+    }
+
+    private fun showError(errorMessage: String) =
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
 
     companion object {
         private const val MOVIE_ID_PARAM = "movieId"
